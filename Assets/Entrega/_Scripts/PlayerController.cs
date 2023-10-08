@@ -13,10 +13,10 @@ public class PlayerController : MonoBehaviour
     public float runSpeedMultiplier = 2.0f; // Multiplicador de velocidad para correr
     public float rotationSpeed = 100.0f; // Velocidad de rotación
     public float gravity;
+    public float animationSmoothTime = 0.1f; // Valor de suavizado para las transiciones de animación
 
-    private bool isRunning = false; // Variable para rastrear si el personaje está corriendo
-    
-    private Vector3 v_velocity = Vector3.zero;
+    private Vector3 v_velocity = Vector3.zero; // Variable para la velocidad vertical
+    private float speedSmoothVelocity; // Variable de velocidad suavizada
 
     void Start()
     {
@@ -31,30 +31,28 @@ public class PlayerController : MonoBehaviour
         inputX = Input.GetAxis("Horizontal");
         inputZ = Input.GetAxis("Vertical");
 
-        // Verifica si la tecla Shift está presionada
-        if (Input.GetKey(KeyCode.LeftShift))
+        // Configura el parámetro Speed del Blend Tree con suavizado
+        float targetSpeed = 0f;
+
+        if (inputZ != 0)
         {
-            isRunning = true;
-        }
-        else
-        {
-            isRunning = false;
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                targetSpeed = Mathf.Sign(inputZ);
+            }
+            else
+            {
+                targetSpeed = Mathf.Sign(inputZ) * 0.5f;
+            }
         }
 
-        // Configura los parámetros del Blend Tree
-        float speed = Mathf.Abs(inputZ);
-        float direction = inputZ > 0 ? inputX : -inputX; // Ajusta la dirección para caminar hacia atrás
+        float smoothedSpeed = Mathf.SmoothDamp(_animator.GetFloat("Speed"), targetSpeed, ref speedSmoothVelocity, animationSmoothTime);
+        float direction = inputX;
 
-        _animator.SetFloat("Speed", speed);
+        _animator.SetFloat("Speed", smoothedSpeed);
         _animator.SetFloat("Direction", direction);
-
-        // Configura las animaciones de correr si se está corriendo
-        if (isRunning)
-        {
-            _animator.SetFloat("Speed", 1.0f);
-            _animator.SetFloat("Direction", 1.0f);
-        }
     }
+
     private void FixedUpdate()
     {
         if (_charController.isGrounded)
@@ -78,7 +76,8 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(Vector3.up * inputX * (rotationSpeed * Time.deltaTime));
 
         // Aplica el movimiento al CharacterController
-        _charController.Move(v_movement * moveSpeed * Time.deltaTime);
+        float speed = Input.GetKey(KeyCode.LeftShift) ? moveSpeed * runSpeedMultiplier : moveSpeed;
+        _charController.Move(v_movement * speed * Time.deltaTime);
         _charController.Move(v_velocity * Time.deltaTime);
     }
 }
