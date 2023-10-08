@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,16 +9,19 @@ public class PlayerController : MonoBehaviour
 
     private float inputX;
     private float inputZ;
-    private Vector3 v_movement; 
+    private Vector3 v_movement;
     private Vector3 v_velocity;
     public float moveSpeed;
-    public float gravity; 
+    public float runSpeedMultiplier = 2.0f; // Multiplicador de velocidad para correr
+    public float gravity;
+
+    private bool isRunning = false; // Variable para rastrear si el personaje está corriendo
 
     void Start()
     {
         GameObject tempPlayer = GameObject.FindGameObjectWithTag("Player");
         _charController = tempPlayer.GetComponent<CharacterController>();
-        _animator = tempPlayer.transform.GetComponent<Animator>(); 
+        _animator = tempPlayer.transform.GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -28,22 +30,34 @@ public class PlayerController : MonoBehaviour
         inputX = Input.GetAxis("Horizontal");
         inputZ = Input.GetAxis("Vertical");
 
-        if (inputZ == 0)
+        // Verifica si la tecla Shift está presionada
+        if (Input.GetKey(KeyCode.LeftShift))
         {
-            _animator.SetBool("isRun", false);
+            isRunning = true;
+        }
+        else
+        {
+            isRunning = false;
+        }
 
-            if (inputX > 0 || inputX < 0)
+        // Configura las animaciones según las entradas de movimiento
+        if (inputZ != 0)
+        {
+            if (isRunning)
             {
-                _animator.SetBool("isWalk", true);
+                _animator.SetBool("isRun", true);
+                _animator.SetBool("isWalk", false);
             }
             else
             {
-                _animator.SetBool("isWalk", false);
+                _animator.SetBool("isRun", false);
+                _animator.SetBool("isWalk", true);
             }
         }
         else
         {
-            _animator.SetBool("isRun", true);
+            _animator.SetBool("isRun", false);
+            _animator.SetBool("isWalk", false);
         }
     }
 
@@ -55,13 +69,16 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            v_velocity.y -= gravity * Time.deltaTime; 
+            v_velocity.y -= gravity * Time.deltaTime;
         }
-        v_movement = _charController.transform.forward * inputZ; 
-        
+        v_movement = _charController.transform.forward * inputZ;
+
+        // Aplica el multiplicador de velocidad si el personaje está corriendo
+        float speed = isRunning ? moveSpeed * runSpeedMultiplier : moveSpeed;
+
         _charController.transform.Rotate(Vector3.up * inputX * (100f * Time.deltaTime));
 
-        _charController.Move(v_movement * moveSpeed * Time.deltaTime);
+        _charController.Move(v_movement * speed * Time.deltaTime);
         _charController.Move(v_velocity);
     }
 }
