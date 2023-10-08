@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
         GameObject tempPlayer = GameObject.FindGameObjectWithTag("Player");
         _charController = tempPlayer.GetComponent<CharacterController>();
         _animator = tempPlayer.transform.GetComponent<Animator>();
+
+        Cursor.visible = false; 
     }
 
     // Update is called once per frame
