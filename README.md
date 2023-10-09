@@ -6,8 +6,8 @@ Instrucciones:
 3. Ejecutar la escena y probar. El objetivo es llegar al final de la escena caminando recto, donde estarán los 3 eventos que cambiarán las cámaras de Cinemachine.
 
 # Controles
-Mouse: girar la cámara Free Look.
-W y S: movimiento del personaje hacía adelante y hacía atrás respectivamente.
-A y D: rotación del personaje hacía la izquierda y hacía la derecha respectivamente.
-Shift: presionar mientras el personaje camina para empezar a correr.
+- Mouse: girar la cámara Free Look.
+- W y S: movimiento del personaje hacía adelante y hacía atrás respectivamente.
+- A y D: rotación del personaje hacía la izquierda y hacía la derecha respectivamente.
+- Shift: presionar mientras el personaje camina para empezar a correr.
 
