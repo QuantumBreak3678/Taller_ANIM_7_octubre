@@ -24,7 +24,8 @@ public class PlayerController : MonoBehaviour
         _charController = tempPlayer.GetComponent<CharacterController>();
         _animator = tempPlayer.transform.GetComponent<Animator>();
 
-        Cursor.visible = false; 
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked; 
     }
 
     // Update is called once per frame
